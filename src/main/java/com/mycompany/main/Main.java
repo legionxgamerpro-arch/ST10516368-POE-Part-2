@@ -145,23 +145,14 @@ public class Main {
     //Creates the login method
     //Checks whether the username and password -
     //entered during login match the registered details.
+    //Returns true or false only; any re-prompting is handled in main.
     public static boolean loginUser(String username, String password) {
-        //Infinite loop for login
-        while (true) {
-         if (username.equals(registeredUsername)
+        if (username.equals(registeredUsername)
                 && password.equals(registeredPassword)) {
             return true;
         } else {
-            //Login details are incorrect
-            System.out.println("Username or password incorrect, please try again ");
-            //Re-prompt the user for username
-            System.out.print("Enter your username to login: ");
-            username = input.nextLine();
-            //Re-prompt the user for password
-            System.out.print("Enter your password to login: ");
-            password = input.nextLine();
-        }   
-      }
+            return false;
+        }
     }
 
     //Creates the login status method
@@ -380,7 +371,7 @@ public class Main {
     //Creates the QuickChat method
     //Shows the welcome message and the menu, and keeps running until the user quits.
     public static void runQuickChat() {
-
+        
         System.out.println("");
         System.out.println("Welcome to QuickChat.");
 
@@ -430,18 +421,23 @@ public class Main {
         //Adds a blank line for neatness
         System.out.println("");
         
-        //Call the login method
-        System.out.print("Enter username to login: ");
-        String loginUsername = input.nextLine();
-        
-        System.out.print("Enter password to login: ");
-        String loginPassword = input.nextLine();
-        
-        //Checks whether login details are correct
-        boolean loginSuccessful = loginUser(loginUsername, loginPassword);
-        
-        //Call the method that displays the login result
-        System.out.println(returnLoginStatus(loginSuccessful));
+        //Loop in main keeps asking for login details until they are correct
+        boolean loginSuccessful = false;
+        while (!loginSuccessful) {
+            
+            //Call the login method
+            System.out.print("Enter username to login: ");
+            String loginUsername = input.nextLine();
+            
+            System.out.print("Enter password to login: ");
+            String loginPassword = input.nextLine();
+            
+            //Checks whether login details are correct
+            loginSuccessful = loginUser(loginUsername, loginPassword);
+            
+            //Call the method that displays the login result
+            System.out.println(returnLoginStatus(loginSuccessful));
+        }
 
         //Part 2: Start QuickChat after a successful login
         if (loginSuccessful) {
