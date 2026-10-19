@@ -31,6 +31,7 @@ public class MainTest {
 
         //Resets the static variables in Main
         Main.messages.clear();
+        Main.storedMessages.clear();
         Main.firstName = null;
         Main.lastName = null;
         Main.username = null;
@@ -168,7 +169,7 @@ public class MainTest {
     }
 
     @Test
-    public void testRegisterUser_reAsksUntilDetailsAreValid() {
+    public void testRegisterUser_reasksUntilDetailsAreValid() {
         giveInput("John", "Smith",
                 "bad", "toolong_user", "jo_h",   //two bad usernames, then good
                 "weak", "Passw0rd!",             //one bad password, then good
@@ -294,6 +295,26 @@ public class MainTest {
         String id = Main.createMessageID(100);
         assertEquals(10, id.length());
         assertTrue(id.startsWith("00"));
+    }
+
+    // ------------------------------------------------------------------
+    // createRandomMessageID (new requirement – randomly generated 10-digit ID)
+    // ------------------------------------------------------------------
+
+    @Test
+    public void testCreateRandomMessageID_isTenDigits() {
+        String id = Main.createRandomMessageID();
+        assertEquals(10, id.length());
+        assertTrue(id.matches("\\d{10}"));
+    }
+
+    @Test
+    public void testCreateRandomMessageID_isWithinValidRange() {
+        for (int i = 0; i < 20; i++) {
+            String id = Main.createRandomMessageID();
+            long value = Long.parseLong(id);
+            assertTrue(value >= 1000000000L && value <= 9999999999L);
+        }
     }
 
     // ------------------------------------------------------------------
@@ -450,12 +471,137 @@ public class MainTest {
     }
 
     // ------------------------------------------------------------------
+    // returnTotalMessages (new requirement)
+    // ------------------------------------------------------------------
+
+    @Test
+    public void testReturnTotalMessages_empty() {
+        assertEquals(0, Main.returnTotalMessages());
+        assertEquals(0, Message.returnTotalMessages());
+    }
+
+    @Test
+    public void testReturnTotalMessages_afterAdding() {
+        Main.messages.add(new String[]{"1", "0112345678", "01:1:HITONIGHT",
+            "+27838968976", "Hi tonight"});
+        Main.messages.add(new String[]{"2", "0212345678", "02:2:HELLOWORLD",
+            "+27111222333", "Hello world"});
+
+        assertEquals(2, Main.returnTotalMessages());
+        assertEquals(2, Message.returnTotalMessages());
+    }
+
+    // ------------------------------------------------------------------
+    // printMessages (new requirement)
+    // ------------------------------------------------------------------
+
+    @Test
+    public void testPrintMessages_empty() {
+        assertEquals("No messages have been sent yet.", Main.printMessages());
+        assertEquals("No messages have been sent yet.", Message.printMessages());
+    }
+
+    @Test
+    public void testPrintMessages_containsDetails() {
+        Main.messages.add(new String[]{"1", "0112345678", "01:1:HITONIGHT",
+            "+27838968976", "Hi tonight"});
+
+        String result = Main.printMessages();
+        assertTrue(result.contains("Message ID: 0112345678"));
+        assertTrue(result.contains("Message Hash: 01:1:HITONIGHT"));
+        assertTrue(result.contains("Recipient: +27838968976"));
+        assertTrue(result.contains("Message: Hi tonight"));
+    }
+
+    // ------------------------------------------------------------------
+    // Message class methods (new requirement)
+    // ------------------------------------------------------------------
+
+    @Test
+    public void testMessage_checkMessageID() {
+        assertTrue(Message.checkMessageID("0112345678"));
+        assertTrue(Message.checkMessageID("123"));
+        assertFalse(Message.checkMessageID("01123456789")); //11 chars
+        assertFalse(Message.checkMessageID(null));
+    }
+
+    @Test
+    public void testMessage_checkRecipientCell_success() {
+        assertEquals("Cell phone number successfully captured.",
+                Message.checkRecipientCell("+27838968976"));
+    }
+
+    @Test
+    public void testMessage_checkRecipientCell_failure() {
+        String result = Message.checkRecipientCell("0838968976");
+        assertTrue(result.contains("incorrectly formatted")
+                || result.contains("international code"));
+    }
+
+    @Test
+    public void testMessage_createMessageHash() {
+        assertEquals("00:1:HITONIGHT",
+                Message.createMessageHash("0012345678", 1, "Hi tonight"));
+    }
+
+    @Test
+    public void testMessage_SentMessage_send() {
+        String[] message = {"1", "0112345678", "01:1:HITONIGHT",
+            "+27838968976", "Hi tonight"};
+        giveInput("1"); // choose Send
+
+        String result = Message.SentMessage(message);
+
+        assertEquals("Message successfully sent.", result);
+        assertEquals(1, Main.messages.size());
+        assertEquals(0, Main.storedMessages.size());
+    }
+
+    @Test
+    public void testMessage_SentMessage_disregard() {
+        String[] message = {"1", "0112345678", "01:1:HITONIGHT",
+            "+27838968976", "Hi tonight"};
+        giveInput("2"); // choose Disregard
+
+        String result = Message.SentMessage(message);
+
+        assertEquals("Press 0 to delete message.", result);
+        assertEquals(0, Main.messages.size());
+        assertEquals(0, Main.storedMessages.size());
+    }
+
+    @Test
+    public void testMessage_SentMessage_store() {
+        String[] message = {"1", "0112345678", "01:1:HITONIGHT",
+            "+27838968976", "Hi tonight"};
+        giveInput("3"); // choose Store
+
+        String result = Message.SentMessage(message);
+
+        assertEquals("Message successfully stored.", result);
+        assertEquals(0, Main.messages.size());
+        assertEquals(1, Main.storedMessages.size());
+    }
+
+    @Test
+    public void testMessage_storeMessage() throws Exception {
+        Main.messages.add(new String[]{"1", "0112345678", "01:1:HITONIGHT",
+            "+27838968976", "Hi tonight"});
+
+        Message.storeMessage();
+
+        assertTrue(new File("messages.json").exists());
+        assertTrue(readJsonFile().contains("\"message\": \"Hi tonight\""));
+    }
+
+    // ------------------------------------------------------------------
     // sendMessages
     // ------------------------------------------------------------------
 
     @Test
     public void testSendMessages_oneMessage() throws Exception {
-        giveInput("1", "+27838968976", "Hi tonight");
+        //howMany=1, recipient, message, then choice=1 (Send)
+        giveInput("1", "+27838968976", "Hi tonight", "1");
 
         Main.sendMessages();
 
@@ -470,14 +616,17 @@ public class MainTest {
         String printed = output();
         assertTrue(printed.contains("Message ready to send."));
         assertTrue(printed.contains("Message ID: " + stored[1]));
+        assertTrue(printed.contains("Message successfully sent."));
+        assertTrue(printed.contains("Total number of messages sent: 1"));
         assertTrue(new File("messages.json").exists());
     }
 
     @Test
     public void testSendMessages_twoMessagesAreNumberedInOrder() {
+        //howMany=2, msg1, choice1, msg2, choice1
         giveInput("2",
-                "+27838968976", "Hi tonight",
-                "+27111222333", "Hello world");
+                "+27838968976", "Hi tonight", "1",
+                "+27111222333", "Hello world", "1");
 
         Main.sendMessages();
 
@@ -487,15 +636,17 @@ public class MainTest {
         assertEquals("01:1:HITONIGHT", Main.messages.get(0)[2]);
         assertEquals("02:2:HELLOWORLD", Main.messages.get(1)[2]);
         assertEquals("+27111222333", Main.messages.get(1)[3]);
+        assertTrue(output().contains("Total number of messages sent: 2"));
     }
 
     @Test
-    public void testSendMessages_reAsksForInvalidInput() {
+    public void testSendMessages_reasksForInvalidInput() {
         giveInput("0", "abc", "1",               //bad counts, then a good one
                 "0838968976", "+27838968976",    //bad recipient, then good
                 "",                              //empty message
                 "a".repeat(251),                 //too long by 1
-                "Hi tonight");                   //good message
+                "Hi tonight",                    //good message
+                "1");                            //Send
 
         Main.sendMessages();
 
@@ -507,6 +658,28 @@ public class MainTest {
 
         assertEquals(1, Main.messages.size());
         assertEquals("Hi tonight", Main.messages.get(0)[4]);
+    }
+
+    @Test
+    public void testSendMessages_disregardDoesNotAddToSentList() {
+        giveInput("1", "+27838968976", "Hi tonight", "2"); // Disregard
+
+        Main.sendMessages();
+
+        assertEquals(0, Main.messages.size());
+        assertTrue(output().contains("Press 0 to delete message."));
+        assertTrue(output().contains("Total number of messages sent: 0"));
+    }
+
+    @Test
+    public void testSendMessages_storeAddsToStoredList() {
+        giveInput("1", "+27838968976", "Hi tonight", "3"); // Store
+
+        Main.sendMessages();
+
+        assertEquals(0, Main.messages.size());
+        assertEquals(1, Main.storedMessages.size());
+        assertTrue(output().contains("Message successfully stored."));
     }
 
     // ------------------------------------------------------------------
@@ -565,23 +738,28 @@ public class MainTest {
     }
 
     @Test
-    public void testRunQuickChat_showMessagesOption() {
+    public void testRunQuickChat_showMessagesOption_ComingSoon() {
+        //Part 2 requirement: option 2 must display "Coming Soon."
         giveInput("2", "3");
 
         Main.runQuickChat();
 
-        assertTrue(output().contains("No messages have been sent yet."));
+        assertTrue(output().contains("Coming Soon."));
+        //The old "No messages..." text must NOT appear for menu option 2
+        assertFalse(output().contains("No messages have been sent yet."));
     }
 
     @Test
     public void testRunQuickChat_sendMessagesOption() {
-        giveInput("1", "1", "+27838968976", "Hello world", "3");
+        //1 = Send Messages, 1 = how many, recipient, message, 1 = Send, 3 = Quit
+        giveInput("1", "1", "+27838968976", "Hello world", "1", "3");
 
         Main.runQuickChat();
 
         assertEquals(1, Main.messages.size());
         assertEquals("Hello world", Main.messages.get(0)[4]);
         assertTrue(output().contains("Goodbye!"));
+        assertTrue(output().contains("Message successfully sent."));
     }
 
     // ------------------------------------------------------------------
@@ -603,5 +781,45 @@ public class MainTest {
         assertTrue(printed.contains("Welcome John Smith it is great to see you again."));
         assertTrue(printed.contains("Welcome to QuickChat."));
         assertTrue(printed.contains("Goodbye!"));
+    }
+
+    // ------------------------------------------------------------------
+    // Additional unit tests required by the brief (Test Data)
+    // ------------------------------------------------------------------
+
+    @Test
+    public void testMessageLength_AssertEquals_success() {
+        //Success: “Message ready to send.”
+        assertTrue(Main.checkMessageLength("Hi Mike, can you join us for dinner tonight?"));
+    }
+
+    @Test
+    public void testMessageLength_AssertEquals_failure() {
+        //Failure: message exceeds 250 characters
+        String longMessage = "a".repeat(251);
+        assertFalse(Main.checkMessageLength(longMessage));
+    }
+
+    @Test
+    public void testRecipientNumber_correctlyFormatted() {
+        //Success: “Cell phone number successfully captured.”
+        assertEquals("Cell phone number successfully captured.",
+                Message.checkRecipientCell("+27718693002"));
+    }
+
+    @Test
+    public void testRecipientNumber_incorrectlyFormatted() {
+        //Failure message from the brief
+        String result = Message.checkRecipientCell("08575975889");
+        assertTrue(result.contains("incorrectly formatted")
+                || result.contains("international code"));
+    }
+
+    @Test
+    public void testMessageHash_correct() {
+        //The system should return 00:0:HITONIGHT when supplied with the data
+        //from Test Case 1 style (first two of ID, message number, first+last word)
+        assertEquals("00:0:HITONIGHT",
+                Main.createMessageHash("0012345678", 0, "Hi tonight"));
     }
 }

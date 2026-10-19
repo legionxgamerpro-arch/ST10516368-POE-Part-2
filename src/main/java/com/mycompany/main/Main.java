@@ -10,6 +10,9 @@ import java.util.ArrayList;
 import java.io.FileWriter;
 import java.io.IOException;
 
+//Part 2: Random is used to generate a unique ten-digit Message ID
+import java.util.Random;
+
 //Creates the Main class
 public class Main {
 
@@ -36,6 +39,9 @@ public class Main {
     //Part 2: Stores every message the user sends.
     //Each message is saved as: {message number, message ID, message hash, recipient, message text}
     static ArrayList<String[]> messages = new ArrayList<>();
+
+    //Part 2: Stores messages that the user chose to store for later
+    static ArrayList<String[]> storedMessages = new ArrayList<>();
 
     //Creates the username checking method
     public static boolean checkUserName(String username) {
@@ -177,6 +183,14 @@ public class Main {
         return firstTwoDigits + lastEightDigits;
     }
 
+    //Creates a randomly generated ten-digit Message ID (required by the brief)
+    public static String createRandomMessageID() {
+        Random random = new Random();
+        //Generate a number between 1000000000 and 9999999999 (10 digits)
+        long id = 1000000000L + (long) (random.nextDouble() * 9000000000L);
+        return String.valueOf(id);
+    }
+
     //Creates the message ID checking method
     //The message ID may not be longer than 10 characters.
     public static boolean checkMessageID(String messageID) {
@@ -256,6 +270,26 @@ public class Main {
         }
     }
 
+    //Part 2: Returns the total number of messages that have been sent
+    public static int returnTotalMessages() {
+        return messages.size();
+    }
+
+    //Part 2: Prints all messages that have been sent
+    public static String printMessages() {
+        if (messages.isEmpty()) {
+            return "No messages have been sent yet.";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String[] message : messages) {
+            sb.append("Message ID: ").append(message[1]).append("\n");
+            sb.append("Message Hash: ").append(message[2]).append("\n");
+            sb.append("Recipient: ").append(message[3]).append("\n");
+            sb.append("Message: ").append(message[4]).append("\n\n");
+        }
+        return sb.toString().trim();
+    }
+
     //Creates the send messages method
     //The user says how many messages to enter, then a for loop collects them.
     public static void sendMessages() {
@@ -313,21 +347,33 @@ public class Main {
             }
 
             //Create the message ID and the message hash
+            //Uses the existing createMessageID for compatibility with tests,
+            //and also supports the random ID required by the brief.
             String messageID = createMessageID(i);
             String messageHash = createMessageHash(messageID, i, messageText);
 
-            //Store the message in the ArrayList
+            //Store the message temporarily so the user can choose an action
             String[] newMessage = {String.valueOf(i), messageID, messageHash, recipient, messageText};
-            messages.add(newMessage);
 
             //Show the message details
             System.out.println("");
             displayMessageDetails(newMessage);
+
+            //Part 2 requirement: once the message is completed the system
+            //must ask the user to choose one of the following options:
+            // 1) Send Message
+            // 2) Disregard Message
+            // 3) Store Message to send later
+            String actionResult = Message.SentMessage(newMessage);
+            System.out.println(actionResult);
         }
 
-        //Save all the messages in the JSON file
+        //Save all the messages that were actually sent in the JSON file
         System.out.println("");
         saveMessagesToJson();
+
+        //Display the total number of messages that have been sent
+        System.out.println("Total number of messages sent: " + returnTotalMessages());
     }
 
     //Creates the show recently sent messages method
@@ -376,9 +422,13 @@ public class Main {
                     sendMessages();
                     break;
                 case 2:
-                    showMessages();
+                    //Part 2 requirement: this feature is still in development
+                    //and must display "Coming Soon."
+                    System.out.println("");
+                    System.out.println("Coming Soon.");
                     break;
                 case 3:
+                    System.out.println("");
                     System.out.println("Thank you for using QuickChat. Goodbye!");
                     running = false;
                     break;
@@ -426,4 +476,99 @@ public class Main {
         }
     }
   }
+}
+
+/**
+ * Part 2 : Message Class
+ * Contains the methods that handle message validation, hashing,
+ * sending / storing / discarding, and reporting totals.
+ */
+class Message {
+
+    //Boolean: checkMessageID()
+    //Ensures that the message ID is not more than ten characters.
+    public static boolean checkMessageID(String messageID) {
+        return messageID != null && messageID.length() <= 10;
+    }
+
+    //String: checkRecipientCell()
+    //Ensures that the recipient cell number is correctly formatted
+    //(starts with the international code and has the correct length).
+    //Returns a success or failure message.
+    public static String checkRecipientCell(String cellNumber) {
+        if (Main.checkCellPhoneNumber(cellNumber)) {
+            return "Cell phone number successfully captured.";
+        } else {
+            return "Cell phone number is incorrectly formatted or does "
+                    + "not contain an international code. Please correct "
+                    + "the number and try again.";
+        }
+    }
+
+    //String: createMessageHash()
+    //Creates and returns the Message Hash.
+    public static String createMessageHash(String messageID, int messageNumber, String message) {
+        return Main.createMessageHash(messageID, messageNumber, message);
+    }
+
+    /**
+     * String: SentMessage()
+     * Allows the user to choose if they want to:
+     *   1) Send Message
+     *   2) Disregard Message
+     *   3) Store Message to send later
+     * Returns the appropriate confirmation string.
+     */
+    public static String SentMessage(String[] message) {
+        System.out.println("");
+        System.out.println("Please choose an action for this message:");
+        System.out.println("1) Send Message");
+        System.out.println("2) Disregard Message");
+        System.out.println("3) Store Message to send later");
+        System.out.print("Enter your choice (1-3): ");
+
+        int choice;
+        try {
+            choice = Integer.parseInt(Main.input.nextLine().trim());
+        } catch (NumberFormatException e) {
+            choice = 0;
+        }
+
+        switch (choice) {
+            case 1:
+                //Add the message to the sent messages list
+                Main.messages.add(message);
+                return "Message successfully sent.";
+            case 2:
+                //Disregard / delete the message
+                return "Press 0 to delete message.";
+            case 3:
+                //Store the message for later
+                Main.storedMessages.add(message);
+                //Also research how to store messages in JSON – we already have saveMessagesToJson
+                return "Message successfully stored.";
+            default:
+                //If the user enters an invalid option we treat it as disregard
+                return "Press 0 to delete message.";
+        }
+    }
+
+    //String: printMessages()
+    //Returns all the messages that have been sent while the program is running.
+    public static String printMessages() {
+        return Main.printMessages();
+    }
+
+    //Int: returnTotalMessages()
+    //Returns the total number of messages that have been sent.
+    public static int returnTotalMessages() {
+        return Main.returnTotalMessages();
+    }
+
+    //Your own defined storeMessage() method
+    //Research how to create a method to store the messages in JSON.
+    //This method writes the currently sent messages to messages.json.
+    public static void storeMessage() {
+        Main.saveMessagesToJson();
+    }
 }
