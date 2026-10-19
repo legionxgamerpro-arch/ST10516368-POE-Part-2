@@ -457,22 +457,18 @@ public class Main {
             }
 
             switch (choice) {
-                case 1:
-                    sendMessages();
-                    break;
-                case 2:
+                case 1 -> sendMessages();
+                case 2 -> {
                     //This feature is still in development and must display "Coming Soon."
                     System.out.println("");
                     System.out.println("Coming Soon.");
-                    break;
-                case 3:
+                }
+                case 3 -> {
                     System.out.println("");
                     System.out.println("Thank you for using QuickChat. Goodbye!");
                     running = false;
-                    break;
-                default:
-                    System.out.println("Invalid option, please enter 1, 2 or 3.");
-                    break;
+                }
+                default -> System.out.println("Invalid option, please enter 1, 2 or 3.");
             }
         }
     }
@@ -573,20 +569,24 @@ class Message {
         }
 
         switch (choice) {
-            case 1:
+            case 1 -> {
                 //Add the message to the sent messages list
                 Main.messages.add(message);
                 return "Message successfully sent.";
-            case 2:
+            }
+            case 2 -> {
                 //Disregard / delete the message
                 return "Press 0 to delete the message.";
-            case 3:
+            }
+            case 3 -> {
                 //Store the message for later
                 Main.storedMessages.add(message);
                 return "Message successfully stored.";
-            default:
+            }
+            default -> {
                 //If the user enters an invalid option we treat it as disregard
                 return "Press 0 to delete the message.";
+            }
         }
     }
 
