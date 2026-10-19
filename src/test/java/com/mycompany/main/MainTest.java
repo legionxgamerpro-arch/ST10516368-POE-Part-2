@@ -300,7 +300,7 @@ public class MainTest {
     }
 
     // ------------------------------------------------------------------
-    // createRandomMessageID (new requirement – randomly generated 10-digit ID)
+    // createRandomMessageID (randomly generated 10-digit ID)
     // ------------------------------------------------------------------
 
     @Test
