@@ -42,11 +42,7 @@ public class Main {
 
         //The username must contain an underscore
         //The username must be no more than five characters long.
-        if (username.length() <= 5 && username.contains("_")) {
-            return true;
-        } else {
-            return false;
-        }
+        return username.length() <= 5 && username.contains("_");
     }
 
     //Creates the password checking method
@@ -54,14 +50,10 @@ public class Main {
     //It must contain a capital letter, a number and a special character.    
     public static boolean checkPasswordComplexity(String password) {
 
-        if (password.length() >= 8
+        return password.length() >= 8
                 && password.matches(".*[A-Z].*")
                 && password.matches(".*[0-9].*")
-                && password.matches(".*[^a-zA-Z0-9].*")) {
-            return true;
-        } else {
-            return false;
-        }
+                && password.matches(".*[^a-zA-Z0-9].*");
     }
 
     //Creates the cellphone checking method
@@ -69,11 +61,7 @@ public class Main {
     //followed by exacly 9 digits
     public static boolean checkCellPhoneNumber(String cellphone) {
 
-        if (cellphone.matches("^\\+27[0-9]{9}$")) {
-            return true;
-        } else {
-            return false;
-        }
+        return cellphone.matches("^\\+27[0-9]{9}$");
     }
 
     //Creates the registration method
@@ -147,12 +135,8 @@ public class Main {
     //entered during login match the registered details.
     //Returns true or false only; any re-prompting is handled in main.
     public static boolean loginUser(String username, String password) {
-        if (username.equals(registeredUsername)
-                && password.equals(registeredPassword)) {
-            return true;
-        } else {
-            return false;
-        }
+        return username.equals(registeredUsername)
+                && password.equals(registeredPassword);
     }
 
     //Creates the login status method
@@ -174,11 +158,7 @@ public class Main {
     //A message may not be longer than 250 characters.
     public static boolean checkMessageLength(String message) {
 
-        if (message.length() <= 250) {
-            return true;
-        } else {
-            return false;
-        }
+        return message.length() <= 250;
     }
 
     //Creates the message ID method
@@ -201,11 +181,7 @@ public class Main {
     //The message ID may not be longer than 10 characters.
     public static boolean checkMessageID(String messageID) {
 
-        if (messageID.length() <= 10) {
-            return true;
-        } else {
-            return false;
-        }
+        return messageID.length() <= 10;
     }
 
     //Creates the message hash method
@@ -395,15 +371,20 @@ public class Main {
                 choice = 0;
             }
 
-            if (choice == 1) {
-                sendMessages();
-            } else if (choice == 2) {
-                showMessages();
-            } else if (choice == 3) {
-                System.out.println("Thank you for using QuickChat. Goodbye!");
-                running = false;
-            } else {
-                System.out.println("Invalid option, please enter 1, 2 or 3.");
+            switch (choice) {
+                case 1:
+                    sendMessages();
+                    break;
+                case 2:
+                    showMessages();
+                    break;
+                case 3:
+                    System.out.println("Thank you for using QuickChat. Goodbye!");
+                    running = false;
+                    break;
+                default:
+                    System.out.println("Invalid option, please enter 1, 2 or 3.");
+                    break;
             }
         }
     }
