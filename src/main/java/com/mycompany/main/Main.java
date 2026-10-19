@@ -43,12 +43,18 @@ public class Main {
     //Part 2: Stores messages that the user chose to store for later
     static ArrayList<String[]> storedMessages = new ArrayList<>();
 
+    //The number of messages the user chose at the start of QuickChat.
+    static int totalMessagesToEnter = 0;
+
+    //Counts every message entered, including messages that are sent, stored, or disregarded.
+    static int messagesCreated = 0;
+
     //Creates the username checking method
     public static boolean checkUserName(String username) {
 
         //The username must contain an underscore
         //The username must be no more than five characters long.
-        return username.length() <= 5 && username.contains("_");
+        return username != null && username.length() <= 5 && username.contains("_");
     }
 
     //Creates the password checking method
@@ -56,7 +62,7 @@ public class Main {
     //It must contain a capital letter, a number and a special character.    
     public static boolean checkPasswordComplexity(String password) {
 
-        return password.length() >= 8
+        return password != null && password.length() >= 8
                 && password.matches(".*[A-Z].*")
                 && password.matches(".*[0-9].*")
                 && password.matches(".*[^a-zA-Z0-9].*");
@@ -67,7 +73,7 @@ public class Main {
     //followed by exacly 9 digits
     public static boolean checkCellPhoneNumber(String cellphone) {
 
-        return cellphone.matches("^\\+27[0-9]{9}$");
+        return cellphone != null && cellphone.matches("^\\+27[0-9]{9}$");
     }
 
     //Creates the registration method
@@ -108,8 +114,8 @@ public class Main {
                 break;
             } else {
                 System.out.println("Password is not correctly formatted; please "
-                        + " ensure that the password contains a capital letter, "
-                        + " a number, and a special character.");
+                        + "ensure that the password contains at least eight characters, "
+                        + "a capital letter, a number, and a special character.");
             }
         }
         
@@ -164,23 +170,18 @@ public class Main {
     //A message may not be longer than 250 characters.
     public static boolean checkMessageLength(String message) {
 
-        return message.length() <= 250;
+        return message != null && message.length() <= 250;
     }
 
-    //Creates the message ID method
-    //The ID is 10 digits: the loop counter (2 digits) + the last 8 digits of the time.
+    //Creates a ten-digit Message ID using the loop counter and random digits.
+    //The first two digits match the message counter, and the last eight are random.
     public static String createMessageID(int messageNumber) {
 
-        //Gets the current time (in milliseconds) as text
-        String time = String.valueOf(System.currentTimeMillis());
-
-        //Uses substring to take the last 8 digits of the time
-        String lastEightDigits = time.substring(time.length() - 8);
-
-        //Uses the loop counter for the first two digits (1 becomes 01)
+        String randomID = createRandomMessageID();
         String firstTwoDigits = String.format("%02d", messageNumber % 100);
 
-        return firstTwoDigits + lastEightDigits;
+        //substring keeps the random ID's last eight digits.
+        return firstTwoDigits + randomID.substring(2);
     }
 
     //Creates a randomly generated ten-digit Message ID (required by the brief)
@@ -191,16 +192,16 @@ public class Main {
         return String.valueOf(id);
     }
 
-    //Creates the message ID checking method
+        //Creates the message ID checking method
     //The message ID may not be longer than 10 characters.
     public static boolean checkMessageID(String messageID) {
 
-        return messageID.length() <= 10;
+        return messageID != null && messageID.length() <= 10;
     }
 
     //Creates the message hash method
     //Format: first two digits of the ID : message number : FIRSTWORDLASTWORD
-    //Example: 01:1:HITONIGHT
+    //Example from the test data: 00:0:HITONIGHT
     public static String createMessageHash(String messageID, int messageNumber, String message) {
 
         //Uses substring to take the first two digits of the message ID
@@ -227,43 +228,85 @@ public class Main {
         System.out.println("Message: " + message[4]);
     }
 
-    //Creates the method that makes text safe to place inside a JSON file
+    //Escapes characters that JSON strings cannot contain unescaped.
     public static String escapeJson(String text) {
-
-        //Backslashes and quotation marks must be escaped in JSON
-        return text.replace("\\", "\\\\").replace("\"", "\\\"");
+        StringBuilder escaped = new StringBuilder();
+        for (int i = 0; i < text.length(); i++) {
+            char character = text.charAt(i);
+            switch (character) {
+                case '\\':
+                    escaped.append("\\\\");
+                    break;
+                case '"':
+                    escaped.append("\\\"");
+                    break;
+                case '\b':
+                    escaped.append("\\b");
+                    break;
+                case '\f':
+                    escaped.append("\\f");
+                    break;
+                case '\n':
+                    escaped.append("\\n");
+                    break;
+                case '\r':
+                    escaped.append("\\r");
+                    break;
+                case '\t':
+                    escaped.append("\\t");
+                    break;
+                default:
+                    if (character < 0x20) {
+                        escaped.append(String.format("\\u%04x", (int) character));
+                    } else {
+                        escaped.append(character);
+                    }
+                    break;
+            }
+        }
+        return escaped.toString();
     }
 
-    //Creates the method that saves all the messages in a JSON file
+    //Adds one message as a JSON object. The status distinguishes sent and stored messages.
+    private static void appendMessageJson(StringBuilder json, String[] message, String status) {
+        json.append("  {\n");
+        json.append("    \"messageNumber\": \"").append(escapeJson(message[0])).append("\",\n");
+        json.append("    \"messageID\": \"").append(escapeJson(message[1])).append("\",\n");
+        json.append("    \"messageHash\": \"").append(escapeJson(message[2])).append("\",\n");
+        json.append("    \"recipient\": \"").append(escapeJson(message[3])).append("\",\n");
+        json.append("    \"message\": \"").append(escapeJson(message[4])).append("\",\n");
+        json.append("    \"status\": \"").append(status).append("\"\n");
+        json.append("  }");
+    }
+
+    //Saves the sent and stored messages to messages.json.
     public static void saveMessagesToJson() {
+        StringBuilder json = new StringBuilder("[\n");
+        boolean firstMessage = true;
 
-        //Builds the JSON text
-        String json = "[\n";
-        int position = 0;
-
-        //For-each loop goes through every stored message
         for (String[] message : messages) {
-            position++;
-
-            json += "  {\n";
-            json += "    \"messageNumber\": \"" + message[0] + "\",\n";
-            json += "    \"messageID\": \"" + message[1] + "\",\n";
-            json += "    \"messageHash\": \"" + message[2] + "\",\n";
-            json += "    \"recipient\": \"" + message[3] + "\",\n";
-            json += "    \"message\": \"" + escapeJson(message[4]) + "\"\n";
-            json += "  }";
-
-            //No comma after the last message
-            if (position < messages.size()) {
-                json += ",";
+            if (!firstMessage) {
+                json.append(",\n");
             }
-            json += "\n";
+            appendMessageJson(json, message, "sent");
+            firstMessage = false;
         }
-        json += "]";
 
-        //Writes the JSON text to a file called messages.json
+        for (String[] message : storedMessages) {
+            if (!firstMessage) {
+                json.append(",\n");
+            }
+            appendMessageJson(json, message, "stored");
+            firstMessage = false;
+        }
+
+        if (!firstMessage) {
+            json.append("\n");
+        }
+        json.append("]");
+
         try (FileWriter writer = new FileWriter("messages.json")) {
-            writer.write(json);
+            writer.write(json.toString());
             System.out.println("Messages saved to messages.json");
         } catch (IOException e) {
             System.out.println("The messages could not be saved to the JSON file.");
@@ -290,45 +333,35 @@ public class Main {
         return sb.toString().trim();
     }
 
-    //Creates the send messages method
-    //The user says how many messages to enter, then a for loop collects them.
+    //Enters the remaining messages from the total the user selected at startup.
     public static void sendMessages() {
 
-        //Ask how many messages the user wants to enter
-        int howMany = 0;
-        while (howMany < 1) {
-            System.out.print("How many messages do you want to enter? ");
-            try {
-                howMany = Integer.parseInt(input.nextLine().trim());
-            } catch (NumberFormatException e) {
-                howMany = 0;
-            }
-
-            if (howMany < 1) {
-                System.out.println("Please enter a whole number of 1 or more.");
-            }
+        int howMany = totalMessagesToEnter - messagesCreated;
+        if (howMany <= 0) {
+            System.out.println("You have already entered the set number of messages.");
+            return;
         }
 
-        //For loop runs once for each message; i is the message number
-        for (int i = 1; i <= howMany; i++) {
+        //The loop counter starts at zero to match the supplied hash test data.
+        for (int i = 0; i < howMany; i++) {
+            int messageNumber = messagesCreated;
 
             System.out.println("");
-            System.out.println("Message " + i + " of " + howMany);
+            System.out.println("Message " + (messageNumber + 1) + " of " + totalMessagesToEnter);
 
-            //Ask for the recipient's cellphone number (uses the Part 1 check)
+            //Ask for the recipient's cellphone number and use the Message class method.
             String recipient;
             while (true) {
                 System.out.print("Enter the recipient's cellphone number (+27): ");
                 recipient = input.nextLine();
-                if (checkCellPhoneNumber(recipient)) {
+                String recipientStatus = Message.checkRecipientCell(recipient);
+                System.out.println(recipientStatus);
+                if (recipientStatus.equals("Cell phone number successfully captured.")) {
                     break;
-                } else {
-                    System.out.println("Cell phone number incorrectly formatted or "
-                            + "does not contain the international code.");
                 }
             }
 
-            //Ask for the message (maximum 250 characters)
+            //Ask for the message (maximum 250 characters).
             String messageText;
             while (true) {
                 System.out.print("Enter your message (max 250 characters): ");
@@ -342,37 +375,33 @@ public class Main {
                 } else {
                     int tooMany = messageText.length() - 250;
                     System.out.println("Message exceeds 250 characters by " + tooMany
-                            + ", please reduce size.");
+                            + "; please reduce the size.");
                 }
             }
 
-            //Create the message ID and the message hash
-            //Uses the existing createMessageID for compatibility with tests,
-            //and also supports the random ID required by the brief.
-            String messageID = createMessageID(i);
-            String messageHash = createMessageHash(messageID, i, messageText);
+            //Create the Message ID and Message Hash using the zero-based loop counter.
+            String messageID = createMessageID(messageNumber);
+            String messageHash = createMessageHash(messageID, messageNumber, messageText);
 
-            //Store the message temporarily so the user can choose an action
-            String[] newMessage = {String.valueOf(i), messageID, messageHash, recipient, messageText};
+            //Store the message temporarily while the user chooses an action.
+            String[] newMessage = {String.valueOf(messageNumber), messageID, messageHash, recipient, messageText};
 
-            //Show the message details
-            System.out.println("");
-            displayMessageDetails(newMessage);
-
-            //Part 2 requirement: once the message is completed the system
-            //must ask the user to choose one of the following options:
-            // 1) Send Message
-            // 2) Disregard Message
-            // 3) Store Message to send later
+            //Ask whether to send, disregard, or store this message.
             String actionResult = Message.SentMessage(newMessage);
             System.out.println(actionResult);
+
+            //Full details displayed after a message has been sent.
+            if (actionResult.equals("Message successfully sent.")) {
+                System.out.println("");
+                displayMessageDetails(newMessage);
+            }
+
+            //Every entered message uses one place in the fixed quota, whichever action was chosen.
+            messagesCreated++;
         }
 
-        //Save all the messages that were actually sent in the JSON file
         System.out.println("");
         saveMessagesToJson();
-
-        //Display the total number of messages that have been sent
         System.out.println("Total number of messages sent: " + returnTotalMessages());
     }
 
@@ -390,18 +419,29 @@ public class Main {
         }
     }
 
-    //Creates the QuickChat method
-    //Shows the welcome message and the menu, and keeps running until the user quits.
+    //Shows the welcome message, asks for the message quota once, and runs the menu until Quit.
     public static void runQuickChat() {
-        
+
         System.out.println("");
         System.out.println("Welcome to QuickChat.");
 
-        //While loop keeps the application running until the user chooses 3
+        messagesCreated = 0;
+        totalMessagesToEnter = 0;
+        while (totalMessagesToEnter < 1) {
+            System.out.print("How many messages do you want to enter? ");
+            try {
+                totalMessagesToEnter = Integer.parseInt(input.nextLine().trim());
+            } catch (NumberFormatException e) {
+                totalMessagesToEnter = 0;
+            }
+
+            if (totalMessagesToEnter < 1) {
+                System.out.println("Please enter a whole number of 1 or more.");
+            }
+        }
+
         boolean running = true;
         while (running) {
-
-            //Display the menu
             System.out.println("");
             System.out.println("Please choose an option:");
             System.out.println("1) Send Messages");
@@ -409,7 +449,6 @@ public class Main {
             System.out.println("3) Quit");
             System.out.print("Enter your choice (1-3): ");
 
-            //Read the choice (letters or symbols will not crash the program)
             int choice;
             try {
                 choice = Integer.parseInt(input.nextLine().trim());
@@ -422,8 +461,7 @@ public class Main {
                     sendMessages();
                     break;
                 case 2:
-                    //Part 2 requirement: this feature is still in development
-                    //and must display "Coming Soon."
+                    //This feature is still in development and must display "Coming Soon."
                     System.out.println("");
                     System.out.println("Coming Soon.");
                     break;
@@ -541,15 +579,14 @@ class Message {
                 return "Message successfully sent.";
             case 2:
                 //Disregard / delete the message
-                return "Press 0 to delete message.";
+                return "Press 0 to delete the message.";
             case 3:
                 //Store the message for later
                 Main.storedMessages.add(message);
-                //Also research how to store messages in JSON – we already have saveMessagesToJson
                 return "Message successfully stored.";
             default:
                 //If the user enters an invalid option we treat it as disregard
-                return "Press 0 to delete message.";
+                return "Press 0 to delete the message.";
         }
     }
 
@@ -564,9 +601,7 @@ class Message {
     public static int returnTotalMessages() {
         return Main.returnTotalMessages();
     }
-
-    //Your own defined storeMessage() method
-    //Research how to create a method to store the messages in JSON.
+    
     //This method writes the currently sent messages to messages.json.
     public static void storeMessage() {
         Main.saveMessagesToJson();

@@ -40,6 +40,8 @@ public class MainTest {
         Main.registeredUsername = null;
         Main.registeredPassword = null;
         Main.registeredCellPhone = null;
+        Main.totalMessagesToEnter = 1;
+        Main.messagesCreated = 0;
     }
 
     //Runs after every test: puts everything back and removes the JSON file
@@ -436,6 +438,7 @@ public class MainTest {
         assertTrue(json.contains("\"messageHash\": \"01:1:HITONIGHT\""));
         assertTrue(json.contains("\"recipient\": \"+27838968976\""));
         assertTrue(json.contains("\"message\": \"Hi tonight\""));
+        assertTrue(json.contains("\"status\": \"sent\""));
     }
 
     @Test
@@ -468,6 +471,18 @@ public class MainTest {
     public void testSaveMessagesToJson_noMessages() throws Exception {
         Main.saveMessagesToJson();
         assertEquals("[\n]", readJsonFile());
+    }
+
+    @Test
+    public void testSaveMessagesToJson_includesStoredMessages() throws Exception {
+        Main.storedMessages.add(new String[]{"0", "0012345678", "00:0:HITONIGHT",
+            "+27838968976", "Hi tonight"});
+
+        Main.saveMessagesToJson();
+
+        String json = readJsonFile();
+        assertTrue(json.contains("\"message\": \"Hi tonight\""));
+        assertTrue(json.contains("\"status\": \"stored\""));
     }
 
     // ------------------------------------------------------------------
@@ -565,7 +580,7 @@ public class MainTest {
 
         String result = Message.SentMessage(message);
 
-        assertEquals("Press 0 to delete message.", result);
+        assertEquals("Press 0 to delete the message.", result);
         assertEquals(0, Main.messages.size());
         assertEquals(0, Main.storedMessages.size());
     }
@@ -600,16 +615,18 @@ public class MainTest {
 
     @Test
     public void testSendMessages_oneMessage() throws Exception {
-        //howMany=1, recipient, message, then choice=1 (Send)
-        giveInput("1", "+27838968976", "Hi tonight", "1");
+        //The quota is set to one in setUp(); provide recipient, message, then choice=1 (Send).
+        Main.totalMessagesToEnter = 1;
+        giveInput("+27838968976", "Hi tonight", "1");
 
         Main.sendMessages();
 
         assertEquals(1, Main.messages.size());
         String[] stored = Main.messages.get(0);
-        assertEquals("1", stored[0]);
+        assertEquals("0", stored[0]);
         assertEquals(10, stored[1].length());
-        assertEquals("01:1:HITONIGHT", stored[2]);
+        assertTrue(stored[1].matches("\\d{10}"));
+        assertEquals("00:0:HITONIGHT", stored[2]);
         assertEquals("+27838968976", stored[3]);
         assertEquals("Hi tonight", stored[4]);
 
@@ -623,38 +640,39 @@ public class MainTest {
 
     @Test
     public void testSendMessages_twoMessagesAreNumberedInOrder() {
-        //howMany=2, msg1, choice1, msg2, choice1
-        giveInput("2",
-                "+27838968976", "Hi tonight", "1",
+        //Set the message quota to two; send two messages in order.
+        Main.totalMessagesToEnter = 2;
+        giveInput("+27838968976", "Hi tonight", "1",
                 "+27111222333", "Hello world", "1");
 
         Main.sendMessages();
 
         assertEquals(2, Main.messages.size());
-        assertEquals("1", Main.messages.get(0)[0]);
-        assertEquals("2", Main.messages.get(1)[0]);
-        assertEquals("01:1:HITONIGHT", Main.messages.get(0)[2]);
-        assertEquals("02:2:HELLOWORLD", Main.messages.get(1)[2]);
+        assertEquals("0", Main.messages.get(0)[0]);
+        assertEquals("1", Main.messages.get(1)[0]);
+        assertEquals("00:0:HITONIGHT", Main.messages.get(0)[2]);
+        assertEquals("01:1:HELLOWORLD", Main.messages.get(1)[2]);
         assertEquals("+27111222333", Main.messages.get(1)[3]);
         assertTrue(output().contains("Total number of messages sent: 2"));
     }
 
     @Test
     public void testSendMessages_reasksForInvalidInput() {
-        giveInput("0", "abc", "1",               //bad counts, then a good one
-                "0838968976", "+27838968976",    //bad recipient, then good
-                "",                              //empty message
-                "a".repeat(251),                 //too long by 1
-                "Hi tonight",                    //good message
-                "1");                            //Send
+        //The quota is configured by QuickChat; this test focuses on recipient/message validation.
+        Main.totalMessagesToEnter = 1;
+        giveInput("0838968976", "+27838968976", //bad recipient, then good
+                "",                             //empty message
+                "a".repeat(251),                //too long by 1
+                "Hi tonight",                   //good message
+                "1");                           //Send
 
         Main.sendMessages();
 
         String printed = output();
-        assertTrue(printed.contains("Please enter a whole number of 1 or more."));
-        assertTrue(printed.contains("Cell phone number incorrectly formatted"));
+        assertTrue(printed.contains("Cell phone number is incorrectly formatted"));
+        assertTrue(printed.contains("Cell phone number successfully captured."));
         assertTrue(printed.contains("The message cannot be empty."));
-        assertTrue(printed.contains("Message exceeds 250 characters by 1, please reduce size."));
+        assertTrue(printed.contains("Message exceeds 250 characters by 1; please reduce the size."));
 
         assertEquals(1, Main.messages.size());
         assertEquals("Hi tonight", Main.messages.get(0)[4]);
@@ -662,24 +680,29 @@ public class MainTest {
 
     @Test
     public void testSendMessages_disregardDoesNotAddToSentList() {
-        giveInput("1", "+27838968976", "Hi tonight", "2"); // Disregard
+        Main.totalMessagesToEnter = 1;
+        giveInput("+27838968976", "Hi tonight", "2"); // Disregard
 
         Main.sendMessages();
 
         assertEquals(0, Main.messages.size());
-        assertTrue(output().contains("Press 0 to delete message."));
+        assertTrue(output().contains("Press 0 to delete the message."));
         assertTrue(output().contains("Total number of messages sent: 0"));
+        assertEquals(1, Main.messagesCreated);
     }
 
     @Test
-    public void testSendMessages_storeAddsToStoredList() {
-        giveInput("1", "+27838968976", "Hi tonight", "3"); // Store
+    public void testSendMessages_storeAddsToStoredList() throws Exception {
+        Main.totalMessagesToEnter = 1;
+        giveInput("+27838968976", "Hi tonight", "3"); // Store
 
         Main.sendMessages();
 
         assertEquals(0, Main.messages.size());
         assertEquals(1, Main.storedMessages.size());
         assertTrue(output().contains("Message successfully stored."));
+        assertEquals(1, Main.messagesCreated);
+        assertTrue(readJsonFile().contains("\"status\": \"stored\""));
     }
 
     // ------------------------------------------------------------------
@@ -715,7 +738,7 @@ public class MainTest {
 
     @Test
     public void testRunQuickChat_quitImmediately() {
-        giveInput("3");
+        giveInput("1", "3"); //quota, then Quit
 
         Main.runQuickChat();
 
@@ -729,7 +752,7 @@ public class MainTest {
 
     @Test
     public void testRunQuickChat_invalidOptionsThenQuit() {
-        giveInput("9", "abc", "3");
+        giveInput("1", "9", "abc", "3"); //quota, invalid menu options, then Quit
 
         Main.runQuickChat();
 
@@ -740,7 +763,7 @@ public class MainTest {
     @Test
     public void testRunQuickChat_showMessagesOption_ComingSoon() {
         //Part 2 requirement: option 2 must display "Coming Soon."
-        giveInput("2", "3");
+        giveInput("1", "2", "3"); //quota, Coming Soon option, then Quit
 
         Main.runQuickChat();
 
@@ -750,8 +773,20 @@ public class MainTest {
     }
 
     @Test
+    public void testRunQuickChat_reasksForInvalidMessageCount() {
+        giveInput("0", "abc", "1", "3"); //invalid quotas, valid quota, then Quit
+
+        Main.runQuickChat();
+
+        String printed = output();
+        assertTrue(printed.contains("Please enter a whole number of 1 or more."));
+        assertTrue(printed.contains("How many messages do you want to enter?"));
+        assertTrue(printed.contains("Goodbye!"));
+    }
+
+    @Test
     public void testRunQuickChat_sendMessagesOption() {
-        //1 = Send Messages, 1 = how many, recipient, message, 1 = Send, 3 = Quit
+        //1 = quota, 1 = Send Messages, then recipient, message, send, and Quit
         giveInput("1", "1", "+27838968976", "Hello world", "1", "3");
 
         Main.runQuickChat();
@@ -771,7 +806,7 @@ public class MainTest {
         giveInput("John", "Smith", "jo_h", "Passw0rd!", "+27838968976", //registration
                 "jo_h", "WrongPass1!",                                   //failed login
                 "jo_h", "Passw0rd!",                                     //successful login
-                "3");                                                    //quit QuickChat
+                "1", "3");                                               //quota, then quit QuickChat
 
         Main.main(new String[0]);
 
