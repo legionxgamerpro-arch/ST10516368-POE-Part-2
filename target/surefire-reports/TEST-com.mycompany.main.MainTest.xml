@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.mycompany.main.MainTest" time="0.392" tests="78" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.mycompany.main.MainTest" time="0.304" tests="78" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="25"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -15,7 +15,7 @@
     <property name="user.country" value="US"/>
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="sun.boot.library.path" value="C:\Program Files\Apache NetBeans\jdk\bin"/>
-    <property name="sun.java.command" value="C:\Users\Student\AppData\Local\Temp\surefire13405866795938538202\surefirebooter-20261019191142048_3.jar C:\Users\Student\AppData\Local\Temp\surefire13405866795938538202 2026-10-19T19-11-41_089-jvmRun1 surefire-20261019191142048_1tmp surefire_0-20261019191142048_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\Student\AppData\Local\Temp\surefire1480613902171545296\surefirebooter-20261019211437414_3.jar C:\Users\Student\AppData\Local\Temp\surefire1480613902171545296 2026-10-19T21-14-37_260-jvmRun1 surefire-20261019211437414_1tmp surefire_0-20261019211437414_2tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="test" value="com.mycompany.main.MainTest"/>
     <property name="surefire.test.class.path" value="C:\Users\Student\Documents\GitHub\ST10516368-POE-Part-2\target\test-classes;C:\Users\Student\Documents\GitHub\ST10516368-POE-Part-2\target\classes;C:\Users\Student\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.10.3\junit-jupiter-api-5.10.3.jar;C:\Users\Student\.m2\repository\org\junit\platform\junit-platform-commons\1.10.3\junit-platform-commons-1.10.3.jar;C:\Users\Student\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\Student\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.10.3\junit-jupiter-params-5.10.3.jar;C:\Users\Student\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.10.3\junit-jupiter-engine-5.10.3.jar;C:\Users\Student\.m2\repository\org\junit\platform\junit-platform-engine\1.10.3\junit-platform-engine-1.10.3.jar;C:\Users\Student\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;"/>
@@ -31,7 +31,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\Student\AppData\Local\Temp\surefire13405866795938538202\surefirebooter-20261019191142048_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\Student\AppData\Local\Temp\surefire1480613902171545296\surefirebooter-20261019211437414_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="25.0.1+8-LTS"/>
@@ -62,75 +62,75 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="69.0"/>
   </properties>
-  <testcase name="testLoginUser_correctDetails" classname="com.mycompany.main.MainTest" time="0.065"/>
-  <testcase name="testCreateMessageHash_emptyMessage" classname="com.mycompany.main.MainTest" time="0.009"/>
-  <testcase name="testRecipientNumber_incorrectlyFormatted" classname="com.mycompany.main.MainTest" time="0.004"/>
+  <testcase name="testLoginUser_correctDetails" classname="com.mycompany.main.MainTest" time="0.041"/>
+  <testcase name="testCreateMessageHash_emptyMessage" classname="com.mycompany.main.MainTest" time="0.01"/>
+  <testcase name="testRecipientNumber_incorrectlyFormatted" classname="com.mycompany.main.MainTest" time="0.003"/>
   <testcase name="testCheckMessageLength_withinLimit" classname="com.mycompany.main.MainTest" time="0.002"/>
-  <testcase name="testReturnTotalMessages_afterAdding" classname="com.mycompany.main.MainTest" time="0.002"/>
-  <testcase name="testSaveMessagesToJson_commaBetweenMessagesOnly" classname="com.mycompany.main.MainTest" time="0.009"/>
-  <testcase name="testMessageLength_AssertEquals_failure" classname="com.mycompany.main.MainTest" time="0.006"/>
+  <testcase name="testReturnTotalMessages_afterAdding" classname="com.mycompany.main.MainTest" time="0.001"/>
+  <testcase name="testSaveMessagesToJson_commaBetweenMessagesOnly" classname="com.mycompany.main.MainTest" time="0.008"/>
+  <testcase name="testMessageLength_AssertEquals_failure" classname="com.mycompany.main.MainTest" time="0.002"/>
   <testcase name="testMessageHash_correct" classname="com.mycompany.main.MainTest" time="0.002"/>
-  <testcase name="testRunQuickChat_invalidOptionsThenQuit" classname="com.mycompany.main.MainTest" time="0.003"/>
-  <testcase name="testMessage_checkRecipientCell_success" classname="com.mycompany.main.MainTest" time="0.003"/>
+  <testcase name="testRunQuickChat_invalidOptionsThenQuit" classname="com.mycompany.main.MainTest" time="0.004"/>
+  <testcase name="testMessage_checkRecipientCell_success" classname="com.mycompany.main.MainTest" time="0.002"/>
   <testcase name="testDisplayMessageDetails" classname="com.mycompany.main.MainTest" time="0.002"/>
   <testcase name="testCheckCellPhoneNumber_wrongLength" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testCheckPasswordComplexity_tooShort" classname="com.mycompany.main.MainTest" time="0.002"/>
-  <testcase name="testMessage_storeMessage" classname="com.mycompany.main.MainTest" time="0.004"/>
+  <testcase name="testCheckPasswordComplexity_tooShort" classname="com.mycompany.main.MainTest" time="0.005"/>
+  <testcase name="testMessage_storeMessage" classname="com.mycompany.main.MainTest" time="0.003"/>
   <testcase name="testRegisterUser_reasksUntilDetailsAreValid" classname="com.mycompany.main.MainTest" time="0.002"/>
-  <testcase name="testSaveMessagesToJson_includesStoredMessages" classname="com.mycompany.main.MainTest" time="0.004"/>
+  <testcase name="testSaveMessagesToJson_includesStoredMessages" classname="com.mycompany.main.MainTest" time="0.003"/>
   <testcase name="testEscapeJson_escapesBackslashes" classname="com.mycompany.main.MainTest" time="0.002"/>
-  <testcase name="testLoginUser_returnsWithoutAskingForInput" classname="com.mycompany.main.MainTest" time="0.003"/>
+  <testcase name="testLoginUser_returnsWithoutAskingForInput" classname="com.mycompany.main.MainTest" time="0.001"/>
   <testcase name="testLoginUser_bothWrong" classname="com.mycompany.main.MainTest" time="0.001"/>
   <testcase name="testCheckCellPhoneNumber_noInternationalCode" classname="com.mycompany.main.MainTest" time="0.001"/>
   <testcase name="testCreateMessageHash_twoDigitMessageNumber" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testMessage_checkRecipientCell_failure" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testLoginUser_wrongUsername" classname="com.mycompany.main.MainTest" time="0.001"/>
+  <testcase name="testMessage_checkRecipientCell_failure" classname="com.mycompany.main.MainTest" time="0.002"/>
+  <testcase name="testLoginUser_wrongUsername" classname="com.mycompany.main.MainTest" time="0.002"/>
   <testcase name="testPrintMessages_empty" classname="com.mycompany.main.MainTest" time="0.001"/>
   <testcase name="testCheckMessageID_tooLong" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testCreateMessageHash_ignoresExtraSpaces" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testSendMessages_twoMessagesAreNumberedInOrder" classname="com.mycompany.main.MainTest" time="0.01"/>
-  <testcase name="testCreateMessageHash_removesPunctuation" classname="com.mycompany.main.MainTest" time="0.003"/>
+  <testcase name="testCreateMessageHash_ignoresExtraSpaces" classname="com.mycompany.main.MainTest" time="0.002"/>
+  <testcase name="testSendMessages_twoMessagesAreNumberedInOrder" classname="com.mycompany.main.MainTest" time="0.008"/>
+  <testcase name="testCreateMessageHash_removesPunctuation" classname="com.mycompany.main.MainTest" time="0.001"/>
   <testcase name="testSendMessages_disregardDoesNotAddToSentList" classname="com.mycompany.main.MainTest" time="0.003"/>
-  <testcase name="testCheckPasswordComplexity_noCapital" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testRunQuickChat_quitImmediately" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testCreateMessageHash_singleWordUsedAsFirstAndLast" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testReturnTotalMessages_empty" classname="com.mycompany.main.MainTest" time="0.0"/>
+  <testcase name="testCheckPasswordComplexity_noCapital" classname="com.mycompany.main.MainTest" time="0.002"/>
+  <testcase name="testRunQuickChat_quitImmediately" classname="com.mycompany.main.MainTest" time="0.003"/>
+  <testcase name="testCreateMessageHash_singleWordUsedAsFirstAndLast" classname="com.mycompany.main.MainTest" time="0.002"/>
+  <testcase name="testReturnTotalMessages_empty" classname="com.mycompany.main.MainTest" time="0.001"/>
   <testcase name="testSendMessages_reasksForInvalidInput" classname="com.mycompany.main.MainTest" time="0.004"/>
   <testcase name="testCheckCellPhoneNumber_valid" classname="com.mycompany.main.MainTest" time="0.001"/>
   <testcase name="testCheckPasswordComplexity_noNumber" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testCheckUserName_tooLong" classname="com.mycompany.main.MainTest" time="0.002"/>
+  <testcase name="testCheckUserName_tooLong" classname="com.mycompany.main.MainTest" time="0.001"/>
   <testcase name="testCheckUserName_noUnderscore" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testSaveMessagesToJson_writesMessage" classname="com.mycompany.main.MainTest" time="0.003"/>
+  <testcase name="testSaveMessagesToJson_writesMessage" classname="com.mycompany.main.MainTest" time="0.002"/>
   <testcase name="testMessage_checkMessageID" classname="com.mycompany.main.MainTest" time="0.001"/>
   <testcase name="testSaveMessagesToJson_escapesSpecialCharacters" classname="com.mycompany.main.MainTest" time="0.003"/>
   <testcase name="testCreateMessageHash_basic" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testMessage_SentMessage_disregard" classname="com.mycompany.main.MainTest" time="0.001"/>
+  <testcase name="testMessage_SentMessage_disregard" classname="com.mycompany.main.MainTest" time="0.002"/>
   <testcase name="testCheckMessageID_valid" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testMessage_SentMessage_send" classname="com.mycompany.main.MainTest" time="0.002"/>
-  <testcase name="testCheckPasswordComplexity_valid" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testCheckPasswordComplexity_noSpecialCharacter" classname="com.mycompany.main.MainTest" time="0.001"/>
+  <testcase name="testMessage_SentMessage_send" classname="com.mycompany.main.MainTest" time="0.003"/>
+  <testcase name="testCheckPasswordComplexity_valid" classname="com.mycompany.main.MainTest" time="0.002"/>
+  <testcase name="testCheckPasswordComplexity_noSpecialCharacter" classname="com.mycompany.main.MainTest" time="0.002"/>
   <testcase name="testCreateRandomMessageID_isTenDigits" classname="com.mycompany.main.MainTest" time="0.001"/>
   <testcase name="testEscapeJson_escapesQuotes" classname="com.mycompany.main.MainTest" time="0.001"/>
   <testcase name="testCreateMessageID_numberOver99WrapsToTwoDigits" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testLoginUser_wrongPassword" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testCheckCellPhoneNumber_lettersAndSpaces" classname="com.mycompany.main.MainTest" time="0.002"/>
-  <testcase name="testMain_registerThenLoginRetryThenQuit" classname="com.mycompany.main.MainTest" time="0.003"/>
+  <testcase name="testLoginUser_wrongPassword" classname="com.mycompany.main.MainTest" time="0.002"/>
+  <testcase name="testCheckCellPhoneNumber_lettersAndSpaces" classname="com.mycompany.main.MainTest" time="0.003"/>
+  <testcase name="testMain_registerThenLoginRetryThenQuit" classname="com.mycompany.main.MainTest" time="0.004"/>
   <testcase name="testSendMessages_oneMessage" classname="com.mycompany.main.MainTest" time="0.003"/>
   <testcase name="testLoginUser_isCaseSensitive" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testCreateMessageHash_usesLongerMessageFirstAndLastWord" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testShowMessages_empty" classname="com.mycompany.main.MainTest" time="0.0"/>
+  <testcase name="testCreateMessageHash_usesLongerMessageFirstAndLastWord" classname="com.mycompany.main.MainTest" time="0.002"/>
+  <testcase name="testShowMessages_empty" classname="com.mycompany.main.MainTest" time="0.001"/>
   <testcase name="testReturnLoginStatus_success" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testMessage_createMessageHash" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testCheckMessageLength_overLimit" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testRecipientNumber_correctlyFormatted" classname="com.mycompany.main.MainTest" time="0.0"/>
+  <testcase name="testMessage_createMessageHash" classname="com.mycompany.main.MainTest" time="0.002"/>
+  <testcase name="testCheckMessageLength_overLimit" classname="com.mycompany.main.MainTest" time="0.002"/>
+  <testcase name="testRecipientNumber_correctlyFormatted" classname="com.mycompany.main.MainTest" time="0.001"/>
   <testcase name="testEscapeJson_plainTextUnchanged" classname="com.mycompany.main.MainTest" time="0.001"/>
   <testcase name="testMessage_SentMessage_store" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testRunQuickChat_reasksForInvalidMessageCount" classname="com.mycompany.main.MainTest" time="0.003"/>
+  <testcase name="testRunQuickChat_reasksForInvalidMessageCount" classname="com.mycompany.main.MainTest" time="0.002"/>
   <testcase name="testCreateRandomMessageID_isWithinValidRange" classname="com.mycompany.main.MainTest" time="0.002"/>
   <testcase name="testPrintMessages_containsDetails" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testRunQuickChat_showMessagesOption_ComingSoon" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testCreateMessageID_startsWithMessageNumber" classname="com.mycompany.main.MainTest" time="0.002"/>
-  <testcase name="testShowMessages_displaysEveryMessage" classname="com.mycompany.main.MainTest" time="0.002"/>
+  <testcase name="testRunQuickChat_showMessagesOption_ComingSoon" classname="com.mycompany.main.MainTest" time="0.002"/>
+  <testcase name="testCreateMessageID_startsWithMessageNumber" classname="com.mycompany.main.MainTest" time="0.001"/>
+  <testcase name="testShowMessages_displaysEveryMessage" classname="com.mycompany.main.MainTest" time="0.001"/>
   <testcase name="testMessageLength_AssertEquals_success" classname="com.mycompany.main.MainTest" time="0.001"/>
   <testcase name="testReturnLoginStatus_failure" classname="com.mycompany.main.MainTest" time="0.001"/>
   <testcase name="testRegisterUser_success" classname="com.mycompany.main.MainTest" time="0.001"/>
@@ -138,6 +138,6 @@
   <testcase name="testCheckUserName_empty" classname="com.mycompany.main.MainTest" time="0.001"/>
   <testcase name="testCheckUserName_valid" classname="com.mycompany.main.MainTest" time="0.001"/>
   <testcase name="testCreateMessageID_isTenDigits" classname="com.mycompany.main.MainTest" time="0.001"/>
-  <testcase name="testSendMessages_storeAddsToStoredList" classname="com.mycompany.main.MainTest" time="0.003"/>
+  <testcase name="testSendMessages_storeAddsToStoredList" classname="com.mycompany.main.MainTest" time="0.004"/>
   <testcase name="testRunQuickChat_sendMessagesOption" classname="com.mycompany.main.MainTest" time="0.003"/>
 </testsuite>

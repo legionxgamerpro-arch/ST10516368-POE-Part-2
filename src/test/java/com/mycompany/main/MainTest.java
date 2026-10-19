@@ -486,7 +486,7 @@ public class MainTest {
     }
 
     // ------------------------------------------------------------------
-    // returnTotalMessages (new requirement)
+    // returnTotalMessages
     // ------------------------------------------------------------------
 
     @Test
@@ -507,7 +507,7 @@ public class MainTest {
     }
 
     // ------------------------------------------------------------------
-    // printMessages (new requirement)
+    // printMessages 
     // ------------------------------------------------------------------
 
     @Test
@@ -529,7 +529,7 @@ public class MainTest {
     }
 
     // ------------------------------------------------------------------
-    // Message class methods (new requirement)
+    // Message class methods 
     // ------------------------------------------------------------------
 
     @Test
@@ -819,7 +819,7 @@ public class MainTest {
     }
 
     // ------------------------------------------------------------------
-    // Additional unit tests required by the brief (Test Data)
+    // Additional unit tests required by the Part 2 brief (Test Data)
     // ------------------------------------------------------------------
 
     @Test
